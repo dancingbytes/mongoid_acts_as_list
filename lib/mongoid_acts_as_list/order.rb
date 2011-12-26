@@ -1,13 +1,30 @@
 # encoding: utf-8
-module ActsAsList
+module MongoidActsAsList
 
   module Order
 
-    module ClassMethods
-    end # ClassMethods
-
     module InstanceMethods
       
+      def move_lower
+        
+        lower = lower_item
+        return unless lower
+        
+        lower.decrement_position
+        self.increment_position
+        
+      end # move_lower
+      
+      def move_higher
+        
+        higher = higher_item
+        return unless higher
+        
+        higher.increment_position
+        self.decrement_position
+        
+      end # move_higher
+
       def increment_position
 
         return unless in_list?
@@ -18,7 +35,6 @@ module ActsAsList
       def decrement_position
 
         return unless in_list?
-        
         self.inc(:position, -1)
 
       end # decrement_position
@@ -55,7 +71,7 @@ module ActsAsList
       private
       
       def self_class
-        @self_class ||= self.embedded? ? self._parent.try(self.collection_name) : self.class
+        @self_class ||= self.embedded? ? self._parent.try(self.collection_name).where(:position.ne => nil) : self.class
       end # self_class
       
       def add_to_list_bottom
@@ -67,6 +83,14 @@ module ActsAsList
         self_class.desc(:position).first
 
       end # bottom_item
+      
+      def lower_item
+        self_class.where(:position => self.position + 1).first
+      end # lower_item
+      
+      def higher_item
+        self_class.where(:position => self.position - 1).first
+      end # higher_item
       
       def decrement_positions_on_lower_items
 
@@ -112,4 +136,4 @@ module ActsAsList
 
   end # Order
 
-end # ActsAsFiles
+end # MongoidActsAsList

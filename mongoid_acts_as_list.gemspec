@@ -1,17 +1,17 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "acts_as_list/version"
+require "mongoid_acts_as_list/version"
 
 Gem::Specification.new do |s|
   
-  s.name = 'acts_as_list'
-  s.version = ActsAsList::VERSION
+  s.name = 'mongoid_acts_as_list'
+  s.version = MongoidActsAsList::VERSION
   s.platform = Gem::Platform::RUBY
   s.authors = ['redfield', 'Tyralion']
   s.email = ['info@dancingbytes.ru']
-  s.homepage = 'https://github.com/dancingbytes/acts_as_list'
-  s.summary = 'Files upload manager for rails'
-  s.description = 'Files upload manager for rails'
+  s.homepage = 'https://github.com/dancingbytes/mongoid_acts_as_list'
+  s.summary = ''
+  s.description = ''
 
   s.files = `git ls-files`.split("\n")
   s.test_files = `git ls-files -- {test,spec,features}/*`.split("\n")
