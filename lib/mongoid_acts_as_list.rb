@@ -11,11 +11,29 @@ module MongoidActsAsList
       
       position_field  = options.fetch(:field, :position).try(:to_sym)
       scope_field     = options.fetch(:scope, nil).try(:to_sym)
-      
-      default_scope order_by([:position_field, :asc])
 
       field position_field,   type: Integer
-      index position_field,   background: true
+      
+      if scope_field.nil?
+        
+        default_scope order_by([position_field, :asc])
+        index position_field
+
+      else
+        
+        default_scope order_by([position_field, :asc], [scope_field, :asc])
+
+        index(
+
+          [
+            [ position_field, Mongo::ASCENDING ],
+            [ scope_field,    Mongo::ASCENDING ]
+          ],
+          name: "acts_as_list_indx"
+          
+        )
+
+      end  
 
       define_method(:acts_as_list_position_field) { position_field }
 
