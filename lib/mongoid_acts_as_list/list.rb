@@ -57,22 +57,12 @@ module MongoidActsAsList
 
       end # move_to_top
       
-      def remove_from_list
-
-        return unless in_list?
-
-        decrement_positions_on_lower_items
-        self[acts_as_list_position_field] = nil
-        self_class.update_all(acts_as_list_position_field => self[acts_as_list_position_field])
-
-      end # remove_from_list
+      private
       
       def in_list?
         !self[acts_as_list_position_field].nil?
       end # in_list?
 
-      private
-      
       def self_class
 
         @self_class ||= if self.embedded?
@@ -100,6 +90,16 @@ module MongoidActsAsList
         self_class.where(acts_as_list_position_field => self[acts_as_list_position_field] - 1).first
       end # higher_item
       
+      def remove_from_list
+
+        return unless in_list?
+
+        decrement_positions_on_lower_items
+        self[acts_as_list_position_field] = nil
+        self_class.update_all(acts_as_list_position_field => self[acts_as_list_position_field])
+
+      end # remove_from_list
+
       def decrement_positions_on_lower_items
 
         return unless in_list?

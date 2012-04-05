@@ -5,7 +5,7 @@ require 'rdoc/task'
 desc 'Default: run unit tests.'
 task :default => :test
 
-desc 'Test the gektor plugin.'
+desc 'Test the mongoid_acts_as_list plugin.'
 Rake::TestTask.new(:test) do |t|
   t.libs << 'lib'
   t.libs << 'test'
@@ -13,7 +13,7 @@ Rake::TestTask.new(:test) do |t|
   t.verbose = true
 end
 
-desc 'Generate documentation for the acts_as_files plugin.'
+desc 'Generate documentation for the mongoid_acts_as_list plugin.'
 RDoc::Task.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title    = 'ActsAsFiles'

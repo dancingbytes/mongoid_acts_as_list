@@ -24,7 +24,7 @@ module MongoidActsAsList
       }
 
       set_callback :create,  :before,  :add_to_list_bottom
-      set_callback :destroy, :before,  :decrement_positions_on_lower_items
+      set_callback :destroy, :before,  :remove_from_list
 
     end # act_as_files
 
