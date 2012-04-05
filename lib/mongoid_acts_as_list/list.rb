@@ -1,7 +1,7 @@
 # encoding: utf-8
 module MongoidActsAsList
 
-  module Order
+  module List
 
     module InstanceMethods
       
@@ -28,20 +28,21 @@ module MongoidActsAsList
       def increment_position
 
         return unless in_list?
-        self.inc(:position, 1)
+        self.inc(acts_as_list_position_field, 1)
 
       end # increment_position
       
       def decrement_position
 
         return unless in_list?
-        self.inc(:position, -1)
+        self.inc(acts_as_list_position_field, -1)
 
       end # decrement_position
       
       def move_to_bottom
 
         return unless in_list?
+        
         decrement_positions_on_lower_items
         assume_bottom_position
 
@@ -50,6 +51,7 @@ module MongoidActsAsList
       def move_to_top
 
         return unless in_list?
+
         increment_positions_on_higher_items
         assume_top_position
 
@@ -58,9 +60,10 @@ module MongoidActsAsList
       def remove_from_list
 
         return unless in_list?
+
         decrement_positions_on_lower_items
-        self.position = nil
-        self_class.update_all(:position => self.position)
+        self[acts_as_list_position_field] = nil
+        self_class.update_all(acts_as_list_position_field => self[acts_as_list_position_field])
 
       end # remove_from_list
       
@@ -71,35 +74,41 @@ module MongoidActsAsList
       private
       
       def self_class
-        @self_class ||= self.embedded? ? self._parent.try(self.collection_name).where(:position.ne => nil) : self.class
+        
+        @self_class ||= if self.embedded?
+          self._parent.try(self.collection_name).where(acts_as_list_position_field.ne => nil) 
+        else 
+          self
+        end
+
+        @self_class.acts_as_list_scope_fields
+
       end # self_class
       
       def add_to_list_bottom
-        self.position = (bottom_item.try(:position) || 0).to_i + 1
+        self.position = (bottom_item.try(acts_as_list_position_field) || 0).to_i + 1
       end # add_to_list_bottom
       
-      def bottom_item
-        
-        self_class.desc(:position).first
-
+      def bottom_item        
+        self_class.desc(acts_as_list_position_field).first
       end # bottom_item
       
       def lower_item
-        self_class.where(:position => self.position + 1).first
+        self_class.where(acts_as_list_position_field => self[acts_as_list_position_field] + 1).first
       end # lower_item
       
       def higher_item
-        self_class.where(:position => self.position - 1).first
+        self_class.where(acts_as_list_position_field => self[acts_as_list_position_field] - 1).first
       end # higher_item
       
       def decrement_positions_on_lower_items
 
         return unless in_list?
         self_class.where(
-          :position.gt => self.position.to_i
-          ).each do |m|
-            m.inc(:position, -1)
-          end # each
+          acts_as_list_position_field.gt => self[acts_as_list_position_field]
+        ).each do |m|
+          m.inc(acts_as_list_position_field, -1)
+        end # each
 
       end # decrement_positions_on_lower_items
       
@@ -107,33 +116,29 @@ module MongoidActsAsList
 
         return unless in_list?
         self_class.where(
-          :position.lt => self.position.to_i
-          ).each do |m|
-            m.inc(:position, 1)
-          end # each
+          acts_as_list_position_field.lt => self[acts_as_list_position_field]
+        ).each do |m|
+          m.inc(acts_as_list_position_field, 1)
+        end # each
 
       end # increment_positions_on_higher_items
       
       def assume_bottom_position
 
-        self.position = (bottom_item(self).try(:position) || 0).to_i + 1
-        self_class.update_all(:position => self.position)
+        self[acts_as_list_position_field] = (bottom_item(self).try(acts_as_list_position_field) || 0).to_i + 1
+        self_class.update_all(acts_as_list_position_field => self[acts_as_list_position_field])
 
       end # assume_bottom_position
       
       def assume_top_position
 
-        self.position = 1
-        self_class.update_all(:position => self.position)
+        self[acts_as_list_position_field] = 1
+        self_class.update_all(acts_as_list_position_field => self[acts_as_list_position_field])
 
       end # assume_top_position
       
-      def eliminate_current_position
-        decrement_positions_on_lower_items if in_list?
-      end # eliminate_current_position
-
     end # InstanceMethods
 
-  end # Order
+  end # List
 
 end # MongoidActsAsList
