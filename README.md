@@ -19,9 +19,7 @@ ORM:    MondgoID (2.4)
     # without scope
     acts_as_list
     
-
     ## Instance Methods
-
     move_lower
     move_higher
     increment_position
