@@ -42,7 +42,7 @@ module MongoidActsAsList
       def move_to_bottom
 
         return unless in_list?
-        
+
         decrement_positions_on_lower_items
         assume_bottom_position
 
@@ -68,19 +68,18 @@ module MongoidActsAsList
       end # remove_from_list
       
       def in_list?
-        !self.position.nil?
+        !self[acts_as_list_position_field].nil?
       end # in_list?
 
       private
       
       def self_class
-        
+
         @self_class ||= if self.embedded?
           self._parent.try(self.collection_name).where(acts_as_list_position_field.ne => nil) 
         else 
           self
         end
-
         @self_class.acts_as_list_scope_fields
 
       end # self_class
