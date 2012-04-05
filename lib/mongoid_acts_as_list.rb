@@ -12,6 +12,8 @@ module MongoidActsAsList
       position_field  = options.fetch(:field, :position).try(:to_sym)
       scope_field     = options.fetch(:scope, nil).try(:to_sym)
       
+      default_scope order_by([:position_field, :asc])
+
       field position_field,   type: Integer
       index position_field,   background: true
 
