@@ -38,7 +38,7 @@ module MongoidActsAsList
       define_method(:acts_as_list_position_field) { position_field }
 
       define_method(:acts_as_list_scope_fields) { 
-        scope_field.nil? ? self.class.criteria : self.class.where({ scope_field => self[scope_field] })
+        scope_field.nil? ? nil : { scope_field => self[scope_field] }
       }
 
       set_callback :create,  :before,  :add_to_list_bottom

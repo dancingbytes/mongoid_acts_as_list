@@ -65,20 +65,24 @@ module MongoidActsAsList
 
       def self_class
 
-        @self_class ||= if self.embedded?
-          self._parent.try(self.collection_name).where(acts_as_list_position_field.ne => nil) 
-        else 
-          self
+        return @self_class if @self_class
+
+        @self_class = if self.embedded?
+          self._parent.send(metadata.name).criteria.where({ acts_as_list_position_field.ne => nil })
+        else
+          self.class.criteria
         end
-        @self_class.acts_as_list_scope_fields
+
+        @self_class = @self_class.where(acts_as_list_scope_fields) unless acts_as_list_scope_fields.nil?
+        @self_class
 
       end # self_class
       
-      def add_to_list_bottom
+      def add_to_list_bottom        
         self.position = (bottom_item.try(acts_as_list_position_field) || 0).to_i + 1
       end # add_to_list_bottom
       
-      def bottom_item        
+      def bottom_item
         self_class.desc(acts_as_list_position_field).first
       end # bottom_item
       

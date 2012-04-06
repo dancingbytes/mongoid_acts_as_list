@@ -13,12 +13,42 @@ ORM:    MondgoID (2.4)
 
 ### DSL example
 
-    # with scope
-    acts_as_list  :scope => :legal_entity
 
-    # without scope
-    acts_as_list
+    ## Without scope
+    class Item
+
+      include Mongoid::Document
+      acts_as_list
+
+    end
+
+    ## With scope
+    class Item
+
+      include Mongoid::Document
+      acts_as_list  scope: catalog_id
+
+    end
+
+
+    ## With embeded codument (with scope or not)
+    class Comment
+
+      include Mongoid::Document
+      embedded_in :post
+
+      acts_as_list
+
+    end
+
+    class Post
+
+      include Mongoid::Document
+      embeds_many :comments
+
+    end
     
+
     ## Instance Methods
     move_lower
     move_higher
