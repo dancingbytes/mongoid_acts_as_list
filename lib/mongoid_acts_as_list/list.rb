@@ -4,25 +4,25 @@ module MongoidActsAsList
   module List
 
     module InstanceMethods
-      
+
       def move_lower
-        
+
         lower = lower_item
         return unless lower
-        
+
         lower.decrement_position
         self.increment_position
-        
+
       end # move_lower
-      
+
       def move_higher
-        
+
         higher = higher_item
         return unless higher
-        
+
         higher.increment_position
         self.decrement_position
-        
+
       end # move_higher
 
       def increment_position
@@ -31,14 +31,14 @@ module MongoidActsAsList
         self.inc(acts_as_list_position_field, 1)
 
       end # increment_position
-      
+
       def decrement_position
 
         return unless in_list?
         self.inc(acts_as_list_position_field, -1)
 
       end # decrement_position
-      
+
       def move_to_bottom
 
         return unless in_list?
@@ -47,7 +47,7 @@ module MongoidActsAsList
         assume_bottom_position
 
       end # move_to_bottom
-      
+
       def move_to_top
 
         return unless in_list?
@@ -56,9 +56,15 @@ module MongoidActsAsList
         assume_top_position
 
       end # move_to_top
-      
+
+      alias :down :move_lower
+      alias :up :move_higher
+
+      alias :to_down :move_to_bottom
+      alias :to_up :move_to_top
+
       private
-      
+
       def in_list?
         !self[acts_as_list_position_field].nil?
       end # in_list?
@@ -77,23 +83,23 @@ module MongoidActsAsList
         @self_class
 
       end # self_class
-      
-      def add_to_list_bottom        
+
+      def add_to_list_bottom
         self.position = (bottom_item.try(acts_as_list_position_field) || 0).to_i + 1
       end # add_to_list_bottom
-      
+
       def bottom_item
         self_class.desc(acts_as_list_position_field).first
       end # bottom_item
-      
+
       def lower_item
         self_class.where(acts_as_list_position_field => self[acts_as_list_position_field] + 1).first
       end # lower_item
-      
+
       def higher_item
         self_class.where(acts_as_list_position_field => self[acts_as_list_position_field] - 1).first
       end # higher_item
-      
+
       def remove_from_list
 
         return unless in_list?
@@ -114,7 +120,7 @@ module MongoidActsAsList
         end # each
 
       end # decrement_positions_on_lower_items
-      
+
       def increment_positions_on_higher_items
 
         return unless in_list?
@@ -125,21 +131,21 @@ module MongoidActsAsList
         end # each
 
       end # increment_positions_on_higher_items
-      
+
       def assume_bottom_position
 
-        self[acts_as_list_position_field] = (bottom_item(self).try(acts_as_list_position_field) || 0).to_i + 1
+        self[acts_as_list_position_field] = (bottom_item.try(acts_as_list_position_field) || 0).to_i + 1
         self_class.update_all(acts_as_list_position_field => self[acts_as_list_position_field])
 
       end # assume_bottom_position
-      
+
       def assume_top_position
 
         self[acts_as_list_position_field] = 1
         self_class.update_all(acts_as_list_position_field => self[acts_as_list_position_field])
 
       end # assume_top_position
-      
+
     end # InstanceMethods
 
   end # List

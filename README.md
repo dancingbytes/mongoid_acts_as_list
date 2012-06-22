@@ -47,15 +47,15 @@ ORM:    MondgoID (2.4)
       embeds_many :comments
 
     end
-    
+
 
     ## Instance Methods
-    move_lower
-    move_higher
+    move_lower ( alias: down )
+    move_higher ( alias: up )
     increment_position
     decrement_position
-    move_to_bottom
-    move_to_top
+    move_to_bottom ( alias: to_down )
+    move_to_top ( alias: to_up )
 
 
 ### License
