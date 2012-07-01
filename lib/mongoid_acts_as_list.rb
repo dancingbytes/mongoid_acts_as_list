@@ -14,24 +14,53 @@ module MongoidActsAsList
 
       field position_field,   type: Integer
       
-      if scope_field.nil?
-        
-        default_scope order_by([position_field, :asc])
-        index position_field
+      # For mongoid 2.4
+      unless (::Mongoid::VERSION =~ /\A2.4/).nil?
+
+        if scope_field.nil?
+          
+          default_scope order_by([position_field, :asc])
+          index position_field
+
+        else
+          
+          default_scope order_by([position_field, :asc], [scope_field, :asc])
+
+          index(
+
+            [
+              [ position_field, Mongo::ASCENDING ],
+              [ scope_field,    Mongo::ASCENDING ]
+            ],
+            name: "acts_as_list_indx"
+            
+          )
+
+        end # if
 
       else
-        
-        default_scope order_by([position_field, :asc], [scope_field, :asc])
+      
+        # For mongoid 3
 
-        index(
-
-          [
-            [ position_field, Mongo::ASCENDING ],
-            [ scope_field,    Mongo::ASCENDING ]
-          ],
-          name: "acts_as_list_indx"
+        if scope_field.nil?
           
-        )
+          default_scope order_by([position_field, :asc])
+          index({ "#{position_field}".to_sym => 1 })
+
+        else
+          
+          default_scope order_by([position_field, :asc], [scope_field, :asc])
+
+          index({
+
+            "#{position_field}".to_sym  => 1,
+            "#{scope_field}".to_sym     => 1
+
+          }, {  
+            name: "acts_as_list_indx"            
+          })
+
+        end # if
 
       end  
 
